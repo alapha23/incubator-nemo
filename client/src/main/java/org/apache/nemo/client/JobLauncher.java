@@ -266,11 +266,11 @@ public final class JobLauncher {
       // clean up state...
       Thread.currentThread().interrupt();
       throw new RuntimeException(e);
-    } finally {
+    }/* finally {
       LOG.info("DAG execution done");
       // trigger shutdown.
       shutdown();
-    }
+    }*/
   }
 
   /**

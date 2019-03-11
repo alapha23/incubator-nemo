@@ -264,6 +264,12 @@ public final class JobConf extends ConfigurationModuleBuilder {
   public final class PartitionTransportClientNumThreads implements Name<Integer> {
   }
 
+  /**
+   * Timeout.
+   */
+  @NamedParameter(doc = "Timeout", short_name = "timeout", default_value = "10")
+  public final class Timeout implements Name<Integer> {
+  }
 
   //////////////////////////////// Intermediate Configurations
 

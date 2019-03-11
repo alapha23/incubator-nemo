@@ -19,7 +19,7 @@
 #
 # run this by ./bin/generate_javadocs.sh
 
-TIMEOUT=840
+TIMEOUT=30
 WINDOW=30
 INTERVAL=30
 EVENTS=0

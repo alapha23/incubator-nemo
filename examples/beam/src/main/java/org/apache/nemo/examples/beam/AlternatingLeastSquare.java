@@ -20,6 +20,7 @@ package org.apache.nemo.examples.beam;
 
 import com.github.fommil.netlib.BLAS;
 import com.github.fommil.netlib.LAPACK;
+import org.apache.beam.sdk.PipelineResult;
 import org.apache.nemo.compiler.frontend.beam.NemoRunner;
 import org.apache.nemo.compiler.frontend.beam.transform.LoopCompositeTransform;
 import org.apache.beam.sdk.Pipeline;
@@ -417,7 +418,12 @@ public final class AlternatingLeastSquare {
       GenericSourceSink.write(result, outputFilePath);
     }
 
-    p.run();
+    // p.run() is changed from a blocking function to a non-blocking function
+    // waitUntilFinish() will be blocking and reaping
+    // For example, p.run() is changed into below two lines
+    final PipelineResult result = p.run();
+    result.waitUntilFinish();
+
     LOG.info("JCT " + (System.currentTimeMillis() - start));
   }
 }

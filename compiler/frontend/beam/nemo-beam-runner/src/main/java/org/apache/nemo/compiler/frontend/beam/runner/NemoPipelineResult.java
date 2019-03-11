@@ -18,20 +18,24 @@
  */
 package org.apache.nemo.compiler.frontend.beam.runner;
 
+import org.apache.nemo.client.JobLauncher;
+import org.apache.nemo.driver.NemoDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.beam.sdk.metrics.*;
 import org.apache.nemo.client.ClientEndpoint;
 import org.apache.beam.sdk.PipelineResult;
 import org.joda.time.Duration;
-
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Beam result.
  */
 public final class NemoPipelineResult extends ClientEndpoint implements PipelineResult {
-
+  private static final Logger LOG = LoggerFactory.getLogger(NemoPipelineResult.class.getName());
   /**
    * Default constructor.
    */
@@ -51,11 +55,18 @@ public final class NemoPipelineResult extends ClientEndpoint implements Pipeline
 
   @Override
   public State waitUntilFinish(final Duration duration) {
+
     // TODO #208: NemoPipelineResult#waitUntilFinish hangs
     // Previous code that hangs the job:
     // return (State) super.waitUntilJobFinish(duration.getMillis(), TimeUnit.MILLISECONDS);
     try {
-      Thread.sleep(duration.getMillis());
+      LOG.info("Duration {}", duration.getStandardSeconds());
+      LOG.info("Duration {}", duration.getStandardSeconds());
+      LOG.info("Duration {}", duration.getStandardSeconds());
+
+      Thread.sleep(TimeUnit.SECONDS.toMillis(duration.getStandardSeconds()));
+      LOG.info("After sleeping {}", duration.getStandardSeconds());
+      JobLauncher.shutdown();
     } catch (InterruptedException e) {
       throw new RuntimeException(e);
     }
