@@ -26,12 +26,19 @@ import org.apache.beam.sdk.options.PipelineOptions;
 import org.apache.beam.sdk.options.PipelineOptionsValidator;
 import org.apache.nemo.compiler.frontend.beam.NemoPipelineOptions;
 import org.apache.nemo.compiler.frontend.beam.PipelineVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Runner class for BEAM programs.
  */
 public final class NemoRunner extends PipelineRunner<NemoPipelineResult> {
   private final NemoPipelineOptions nemoPipelineOptions;
+  private static final Logger LOG = LoggerFactory.getLogger(NemoRunner.class.getName());
+  private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
   /**
    * BEAM Pipeline Runner.
@@ -78,10 +85,15 @@ public final class NemoRunner extends PipelineRunner<NemoPipelineResult> {
    * @return The result of the pipeline.
    */
   public NemoPipelineResult run(final Pipeline pipeline) {
-    final PipelineVisitor pipelineVisitor = new PipelineVisitor(pipeline, nemoPipelineOptions);
-    pipeline.traverseTopologically(pipelineVisitor);
+    LOG.info("Start LaunchDAG");
+
+    executorService.execute(() -> {
+      LOG.info("Start LaunchDAG");
+      final PipelineVisitor pipelineVisitor = new PipelineVisitor(pipeline, nemoPipelineOptions);
+      pipeline.traverseTopologically(pipelineVisitor);
+      JobLauncher.launchDAG(pipelineVisitor.getConvertedPipeline(), nemoPipelineOptions.getJobName());
+    });
     final NemoPipelineResult nemoPipelineResult = new NemoPipelineResult();
-    JobLauncher.launchDAG(pipelineVisitor.getConvertedPipeline(), nemoPipelineOptions.getJobName());
     return nemoPipelineResult;
   }
 }
