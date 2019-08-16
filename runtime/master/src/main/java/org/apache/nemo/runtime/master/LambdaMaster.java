@@ -124,8 +124,8 @@ public class LambdaMaster {
       e.printStackTrace();
     }
 
-    LOG.info("Public address: " + publicAddress + ", localAddress: " + localAddress + ", port: " + port);
-    LOG.info("Acceptor open: " + acceptor.isOpen() + ", active: " + acceptor.isActive());
+    System.out.println("Public address: " + publicAddress + ", localAddress: " + localAddress + ", port: " + port);
+    System.out.println("Acceptor open: " + acceptor.isOpen() + ", active: " + acceptor.isActive());
   }
 
   private String getPublicIP() {

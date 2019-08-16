@@ -42,6 +42,8 @@ public class LambdaExecutor implements RequestHandler<Map<String, Object>, Conte
   private Bootstrap clientBootstrap;
   private EventLoopGroup clientWorkerGroup;
 
+  private String serverAddress;
+  private int serverPort;
   /**
    * Reads address and port from the netty server.
    * @param input
@@ -52,9 +54,11 @@ public class LambdaExecutor implements RequestHandler<Map<String, Object>, Conte
   public Context handleRequest(final Map<String, Object> input, final Context context) {
     System.out.println("Input: " + input);
     final String address = (String) input.get("address");
-    final Integer port = Integer.getInteger((String)input.get("port"));
+    final int port = (Integer) input.get("port");
     final String requestedAddr = "/" + address + ":" + port;
     System.out.println("Requested addr: " + requestedAddr);
+    this.serverAddress = address;
+    this.serverPort = port;
 
     // open channel
     this.clientWorkerGroup = new NioEventLoopGroup(1,
@@ -78,11 +82,8 @@ public class LambdaExecutor implements RequestHandler<Map<String, Object>, Conte
    */
   private Channel channelOpen(final Map<String, Object> input) {
     // Connect to the LambdaMaster
-    final String address = (String) input.get("address");
-    final Integer port = (Integer) input.get("port");
-
     final ChannelFuture channelFuture;
-    channelFuture = this.clientBootstrap.connect(new InetSocketAddress(address, port));
+    channelFuture = this.clientBootstrap.connect(new InetSocketAddress(this.serverAddress, this.serverPort));
     channelFuture.awaitUninterruptibly();
     assert channelFuture.isDone();
     if (!channelFuture.isSuccess()) {
